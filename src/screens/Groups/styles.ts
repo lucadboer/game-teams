@@ -5,6 +5,7 @@ export const Container = styled.View`
   padding: 0px 28px;
 
   background-color: black;
+  font-family: ${({theme}) => theme.FONT_FAMILY.REGULAR};
 `
 
 export const Title = styled.Text`
