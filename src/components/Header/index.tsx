@@ -1,4 +1,4 @@
-import { BackButton, BackIcon, Container, Logo } from "./styles";
+import { BackButton, Container, Logo } from "./styles";
 import logo from '@assets/logo.png'
 import { CaretLeft } from "phosphor-react-native";
 
