@@ -12,6 +12,7 @@ export const Container = styled(TouchableOpacity)<ButtonStyleProps>`
   align-items: center;
   margin: 20px 0;
 
+  width: 100%;
   height: 100%;
   max-height: 56px;
 
@@ -24,6 +25,6 @@ export const Container = styled(TouchableOpacity)<ButtonStyleProps>`
 `
 
 export const Title = styled(Text)`
-  font-weight: ${({theme}) => theme.FONT_FAMILY.BOLD};
+  font-weight: bold;
   color: ${({theme}) => theme.COLORS.WHITE};
 `
