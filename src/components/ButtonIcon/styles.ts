@@ -20,6 +20,6 @@ export const Container = styled.TouchableOpacity`
 `
 
 export const Icon = styled(MaterialIcons).attrs<ButtonStyleIconProps>(({theme, variant}) => ({
-  size: 28,
+  size: 24,
   color: variant === 'primary' ? theme.COLORS.GREEN_500 : theme.COLORS.RED
 }))``
