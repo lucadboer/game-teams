@@ -1,9 +1,11 @@
-import { UsersThree } from "phosphor-react-native";
-import styled, { css } from "styled-components/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export const Container = styled.View`
+import { UsersThree } from "phosphor-react-native";
+import styled from "styled-components/native";
+
+export const Container = styled(SafeAreaView)`
   flex: 1;
-  padding: 24px;
+  padding: 0 24px;
   background-color: ${({theme}) => theme.COLORS.GRAY_600};
 `
 
@@ -12,14 +14,6 @@ export const Content = styled.View`
   width: 100%;
   justify-content: center;
   align-items: center;
-`
-
-export const NewGroupInput = styled.TextInput`
-  ${({theme}) => css`
-    background-color: ${theme.COLORS.GRAY_700};
-    color: ${theme.COLORS.GRAY_100};
-  `}
-  border-radius: 6px;
 `
 
 export const Icon = styled(UsersThree).attrs(({ theme }) => ({

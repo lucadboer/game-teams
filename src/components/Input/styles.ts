@@ -2,6 +2,7 @@ import styled, { css } from "styled-components/native";
 
 export const PrimaryInput = styled.TextInput`
   flex: 1;
+  width: 100%;
   padding: 16px;
 
   min-height: 56px;
