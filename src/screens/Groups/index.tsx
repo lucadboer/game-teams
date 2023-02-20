@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { GroupCard } from "@components/GroupCard";
 import { Header } from "@components/Header";
@@ -7,7 +7,8 @@ import { Container } from "./styles";
 import { FlatList } from 'react-native';
 import { ListEmpity } from '@components/ListEmpity';
 import { Button } from '@components/Button';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { groupsGetAll } from '@storage/group/groupsGetAll';
 
 export function Groups() {
   const [groups, setGroups] = useState<string[]>(['Galera da facul', 'Galera do Discord', 'Galera do trabalho'])
@@ -18,6 +19,24 @@ export function Groups() {
     navigation.navigate('new')
   }
 
+  async function fetchGroups() {
+    try {
+      const newGroups = await groupsGetAll()
+      setGroups(newGroups)
+    } 
+    catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleOpenGroup(group: string) {
+    navigation.navigate('players', { group })
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchGroups()
+  }, []))
+
   return (
     <Container>
       <Header />
@@ -26,7 +45,7 @@ export function Groups() {
         data={groups}
         keyExtractor={(item, i) => item + i}
         renderItem={({ item }) => (
-          <GroupCard title={item} />
+          <GroupCard title={item} onPress={() => handleOpenGroup(item)} />
         )}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (<ListEmpity title='A sua lista de turmas está vazia. Crie uma nova turma!' />)}

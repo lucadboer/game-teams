@@ -7,8 +7,11 @@ import { Input } from "@components/Input";
 import { ListEmpity } from "@components/ListEmpity";
 import { PlayerCard } from "@components/PlayerCard";
 import { useRoute } from "@react-navigation/native";
+import { playerAddByGroup } from "@storage/players/playerAddByGroup";
+import { playersGetByGroup } from "@storage/players/playersGetByGroup";
+import { AppError } from "@utils/AppError";
 import { useState } from "react";
-import { FlatList } from "react-native";
+import { Alert, FlatList } from "react-native";
 import { Container, FormContainer, HeaderList, QuantityPlayers } from "./styles";
 
 interface PlayersParams {
@@ -16,10 +19,33 @@ interface PlayersParams {
 }
 
 export function Players() {
+  const [newPlayerName, setNewPlayerName] = useState('')
   const [team, setTeam] = useState('')
 
   const route = useRoute()
   const { group } = route.params as PlayersParams
+
+  async function handleAddNewPlayer() {
+    if (newPlayerName.trim().length === 0) {
+      return Alert.alert('Novo Jogador', 'Informe um nome para adicionar.')
+    }
+
+    const newPlayer = {
+      name: newPlayerName,
+      team,
+    }
+
+    try {
+      await playerAddByGroup(newPlayer, group)
+      const players = await playersGetByGroup(group)
+      console.log(players);
+    }
+    catch (error) {
+      if (error instanceof AppError) {
+        throw Alert.alert('Novo Jogador', error.message)
+      }
+    }
+  }
 
   return (
     <Container>
@@ -27,13 +53,13 @@ export function Players() {
       <Highlight title={group} subtitle="adicione a galera e separe os times" />
 
       <FormContainer>
-        <Input placeholder="Nome do participante" autoCorrect={false}/>
-        <ButtonIcon icon="add" />
+        <Input placeholder="Nome do participante" autoCorrect={false} onChangeText={setNewPlayerName}/>
+        <ButtonIcon icon="add" onPress={handleAddNewPlayer} />
       </FormContainer>
 
       <HeaderList>
         <FlatList 
-          data={['Grupo A', 'Grupo B','Grupo c', 'Grupa B','Grupe A', 'Grup]d B',]} 
+          data={['Team A', 'Team B']} 
           keyExtractor={item => item} 
           renderItem={({item}) => (
             <Filter 
@@ -49,8 +75,8 @@ export function Players() {
       </HeaderList>
 
       <FlatList 
-          data={['aa','aa','aa','aa','aa','aa','aa','aa','aa','aa','aa','aa','aa',]} 
-          keyExtractor={(item, i) => item + i} 
+          data={[]} 
+          keyExtractor={(item) => item} 
           renderItem={({item}) => (
             <PlayerCard 
               name={item} 
