@@ -1,14 +1,17 @@
 import { useCallback, useState } from 'react'
 
+import { FlatList } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
+import { groupsGetAll } from '@storage/group/groupsGetAll';
+
+import { Button } from '@components/Button';
 import { GroupCard } from "@components/GroupCard";
 import { Header } from "@components/Header";
 import { Highlight } from "@components/Highlight";
-import { Container } from "./styles";
-import { FlatList } from 'react-native';
 import { ListEmpity } from '@components/ListEmpity';
-import { Button } from '@components/Button';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { groupsGetAll } from '@storage/group/groupsGetAll';
+
+import { Container } from "./styles";
 
 export function Groups() {
   const [groups, setGroups] = useState<string[]>(['Galera da facul', 'Galera do Discord', 'Galera do trabalho'])

@@ -1,3 +1,15 @@
+import { useEffect, useState } from "react";
+import { Alert, FlatList, Keyboard } from "react-native";
+
+import { useRoute } from "@react-navigation/native";
+
+import { playerAddByGroup } from "@storage/players/playerAddByGroup";
+import { playersGetByGroupAndTeam } from "@storage/players/playersGetByGroupAndTeam";
+import { PlayerDTO } from "@storage/players/PlayerStorageDTO";
+
+import { AppError } from "@utils/AppError";
+
+
 import { Button } from "@components/Button";
 import { ButtonIcon } from "@components/ButtonIcon";
 import { Filter } from "@components/Filter";
@@ -6,13 +18,9 @@ import { Highlight } from "@components/Highlight";
 import { Input } from "@components/Input";
 import { ListEmpity } from "@components/ListEmpity";
 import { PlayerCard } from "@components/PlayerCard";
-import { useRoute } from "@react-navigation/native";
-import { playerAddByGroup } from "@storage/players/playerAddByGroup";
-import { playersGetByGroup } from "@storage/players/playersGetByGroup";
-import { AppError } from "@utils/AppError";
-import { useState } from "react";
-import { Alert, FlatList } from "react-native";
+
 import { Container, FormContainer, HeaderList, QuantityPlayers } from "./styles";
+import { playerRemoveByGroup } from "@storage/players/playerRemoveByGroup";
 
 interface PlayersParams {
   group: string
@@ -21,6 +29,7 @@ interface PlayersParams {
 export function Players() {
   const [newPlayerName, setNewPlayerName] = useState('')
   const [team, setTeam] = useState('')
+  const [players, setPlayers] = useState<PlayerDTO[] | undefined>([])
 
   const route = useRoute()
   const { group } = route.params as PlayersParams
@@ -30,6 +39,10 @@ export function Players() {
       return Alert.alert('Novo Jogador', 'Informe um nome para adicionar.')
     }
 
+    if (!team) {
+      return Alert.alert('Novo Jogador', 'Selecione um time para o jogador.')
+    }
+
     const newPlayer = {
       name: newPlayerName,
       team,
@@ -37,8 +50,10 @@ export function Players() {
 
     try {
       await playerAddByGroup(newPlayer, group)
-      const players = await playersGetByGroup(group)
-      console.log(players);
+      setNewPlayerName('')
+      Keyboard.dismiss()
+
+      fetchPlayersByTeam()
     }
     catch (error) {
       if (error instanceof AppError) {
@@ -47,13 +62,34 @@ export function Players() {
     }
   }
 
+  async function fetchPlayersByTeam() {
+    const playersByTeam = await playersGetByGroupAndTeam(group, team)
+    setPlayers(playersByTeam)
+  }
+
+  async function handleRemovePlayer(playerToRemove: string) {
+    await playerRemoveByGroup(playerToRemove, group)
+    fetchPlayersByTeam()
+  }
+
+  useEffect(() => {
+    fetchPlayersByTeam()
+  }, [team])
+
   return (
     <Container>
       <Header hasBackButton />
       <Highlight title={group} subtitle="adicione a galera e separe os times" />
 
       <FormContainer>
-        <Input placeholder="Nome do participante" autoCorrect={false} onChangeText={setNewPlayerName}/>
+        <Input
+          placeholder="Nome do jogador" 
+          autoCorrect={false} 
+          onChangeText={setNewPlayerName} 
+          value={newPlayerName}
+          onSubmitEditing={handleAddNewPlayer}
+          returnKeyType="done"
+        />
         <ButtonIcon icon="add" onPress={handleAddNewPlayer} />
       </FormContainer>
 
@@ -71,15 +107,16 @@ export function Players() {
           horizontal
           showsHorizontalScrollIndicator={true}
         />
-        <QuantityPlayers>2</QuantityPlayers>
+        <QuantityPlayers>{players?.length}</QuantityPlayers>
       </HeaderList>
 
       <FlatList 
-          data={[]} 
-          keyExtractor={(item) => item} 
+          data={players} 
+          keyExtractor={(player) => player.name} 
           renderItem={({item}) => (
             <PlayerCard 
-              name={item} 
+              name={item.name}
+              onRemove={() => handleRemovePlayer(item.name)} 
             />
           )}
           ListEmptyComponent={<ListEmpity title="Não existe jogadores nessa turma, adicione para formar um time!" />}
