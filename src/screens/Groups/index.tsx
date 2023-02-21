@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { FlatList } from 'react-native';
+import { FlatList, Alert } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { groupsGetAll } from '@storage/group/groupsGetAll';
@@ -12,9 +12,11 @@ import { Highlight } from "@components/Highlight";
 import { ListEmpity } from '@components/ListEmpity';
 
 import { Container } from "./styles";
+import { Loading } from '@components/Loading';
 
 export function Groups() {
-  const [groups, setGroups] = useState<string[]>(['Galera da facul', 'Galera do Discord', 'Galera do trabalho'])
+  const [groups, setGroups] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const navigation = useNavigation()
 
@@ -24,11 +26,16 @@ export function Groups() {
 
   async function fetchGroups() {
     try {
+      setIsLoading(true)
       const newGroups = await groupsGetAll()
       setGroups(newGroups)
     } 
     catch (error) {
-      console.log(error);
+      console.log(error)
+      Alert.alert('Turmas', 'Ocorreu um erro ao buscar as turmas')
+    }
+    finally {
+      setIsLoading(false)
     }
   }
 
@@ -44,7 +51,8 @@ export function Groups() {
     <Container>
       <Header />
       <Highlight title="Turmas" subtitle="jogue com sua turma" />
-      <FlatList
+      {isLoading ? <Loading /> : (
+        <FlatList
         data={groups}
         keyExtractor={(item, i) => item + i}
         renderItem={({ item }) => (
@@ -53,6 +61,7 @@ export function Groups() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (<ListEmpity title='A sua lista de turmas está vazia. Crie uma nova turma!' />)}
       />
+      )}
 
       <Button title='Criar nova turma' onPress={handleNewGroup} />
     </Container>

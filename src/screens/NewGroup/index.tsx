@@ -20,7 +20,7 @@ export function NewGroup() {
 
   async function handleCreateGroup() {
     if (group.trim().length === 0) {
-      return Alert.alert('Novo grupo', 'Digite mais de um caractere para criar o grupo')
+      return Alert.alert('Nova turma', 'Digite mais de um caractere para criar a turma')
     }
     
     try {
@@ -28,7 +28,7 @@ export function NewGroup() {
     }
     catch (error) {
       if (error instanceof AppError) {
-        throw Alert.alert('Novo grupo', error.message)
+        throw Alert.alert('Nova turma', error.message)
       }
     }
     navigation.navigate('players', { group })

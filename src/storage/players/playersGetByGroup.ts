@@ -10,7 +10,8 @@ export async function playersGetByGroup(group: string) {
     const players: PlayerDTO[] = storage ? JSON.parse(storage) : [];
     
     return players
-  } catch (error) {
+  } 
+  catch (error) {
     throw error;
   }
 }
